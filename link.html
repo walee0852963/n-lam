@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>N-LAM LinkHub</title>
+
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#6ee7b7;--muted:#94a3b8;--glass:rgba(255,255,255,0.04)}
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Inter, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:#e6eef6;background:linear-gradient(180deg,#071020 0%,#0b1220 100%);
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px
+    }
+    .card{
+      width:100%;max-width:420px;background:var(--card);border-radius:14px;
+      padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.6);text-align:center
+    }
+    .avatar{
+      width:96px;height:96px;border-radius:50%;object-fit:cover;
+      border:3px solid rgba(255,255,255,0.06);margin:0 auto 12px;display:block
+    }
+    h1{margin:6px 0 2px;font-size:20px}
+    p.bio{margin:0 0 18px;color:var(--muted);font-size:14px}
+
+    .links{display:flex;flex-direction:column;gap:12px}
+    .link{
+      background:var(--glass);padding:12px 14px;border-radius:10px;text-decoration:none;
+      color:#e9f2fb;font-weight:600;display:flex;align-items:center;justify-content:space-between;
+      transition:transform .12s ease,box-shadow .12s ease
+    }
+    .link:hover{transform:translateY(-4px);box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+    .link .left{display:flex;gap:12px;align-items:center}
+    .favicon{
+      width:36px;height:36px;border-radius:8px;display:flex;align-items:center;
+      justify-content:center;background:#091422;color:var(--muted);font-size:14px
+    }
+    .link .text{text-align:left}
+    .link .title{font-size:15px}
+    .link .subtitle{font-size:12px;color:var(--muted)}
+
+    .footer{margin-top:18px;font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;justify-content:center}
+    .actions{
+      display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px
+    }
+    .btn{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);
+      padding:8px 12px;border-radius:8px;color:var(--muted);
+      font-size:13px;text-decoration:none
+    }
+
+    @media (max-width:420px){.card{padding:20px}}
+  </style>
+</head>
+
+<body>
+  <main class="card" id="app">
+
+    <img id="avatar" class="avatar" src="WhatsApp Image 2025-11-12 at 02.53.57_9643e49d.jpg" alt="avatar">
+
+    <h1 id="name">N-LAM  • Sphinx</h1>
+
+    <p class="bio" id="bio">
+      أهلاً بك في <strong>مركز التواصل الرسمي</strong> الخاص بنا!  
+      هنا هتلاقي كل قنواتنا المعتمدة اللي بنشارك فيها آخر الأخبار، الإعلانات، والفعاليات المهمة.  
+      انضم لينا من الروابط المتاحة عشان تتابع كل جديد أول بأول وتكون جزء من مجتمعنا.
+    </p>
+
+    <div class="links" id="links"></div>
+
+    <div class="actions">
+      <a class="btn" id="copyBtn" href="#">نسخ الرابط</a>
+      <a class="btn" id="openAll" href="#">فتح كل الروابط</a>
+    </div>
+
+    <br>
+
+    <img src="WhatsApp Image 2025-11-16 at 04.34.57_4276e09c.jpg"
+         alt="QR Code"
+         style="width:160px;margin:0 auto 15px;display:block;border-radius:12px;" />
+
+  </main>
+
+  <script>
+    const linksData = [
+      {title:'N-LAM على فيسبوك', subtitle:'صفحة فيسبوك', href:'https://www.facebook.com/share/1DQ9SAVgJt/'},
+      {title:'N-LAM  Sessions (Telegram)', subtitle:'قناة تليجرام', href:'https://t.me/N_LAM239500'},
+      {title:'Welcome to N-LAM  (WhatsApp)', subtitle:'جروب واتساب', href:'https://chat.whatsapp.com/Hr7ZuctJynRL17goWqAxQf'}
+    ];
+
+    let totalClicks = 0;
+
+    const linksEl = document.getElementById('links');
+    const copyBtn = document.getElementById('copyBtn');
+    const openAll = document.getElementById('openAll');
+
+    function renderLinks(){
+      linksEl.innerHTML='';
+      linksData.forEach((l, i)=>{
+        const a = document.createElement('a');
+        a.className='link';
+        a.href='#';
+        a.setAttribute('data-href', l.href);
+        a.addEventListener('click',(e)=>{e.preventDefault();visitLink(i);});
+        a.innerHTML=`
+          <div class="left">
+            <div class="favicon">${(l.title||'L').slice(0,2)}</div>
+            <div class="text">
+              <div class="title">${escapeHtml(l.title)}</div>
+              <div class="subtitle">${escapeHtml(l.subtitle||'')}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">»</div>
+        `;
+        linksEl.appendChild(a);
+      });
+    }
+
+    function visitLink(index){
+      const item = linksData[index];
+      if(!item) return;
+      window.open(item.href,'_blank');
+    }
+
+    copyBtn.addEventListener('click',(e)=>{
+      e.preventDefault();
+      navigator.clipboard.writeText(location.href).then(()=>{
+        copyBtn.textContent='تم النسخ ✅';
+        setTimeout(()=>copyBtn.textContent='نسخ الرابط',1500);
+      });
+    });
+
+    openAll.addEventListener('click',(e)=>{
+      e.preventDefault();
+      linksData.forEach(l=>window.open(l.href,'_blank'));
+    });
+
+    function escapeHtml(s){
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    renderLinks();
+  </script>
+
+</body>
+</html>
